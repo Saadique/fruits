@@ -14,3 +14,6 @@ services:
             # See https://docs.docker.com/compose/compose-file/compose-file-v3/#ports for more information.
             - '3306'
         container_name: database
+    mailer:
+        image: schickling/mailcatcher
+        ports: ["1025", "1080"]
