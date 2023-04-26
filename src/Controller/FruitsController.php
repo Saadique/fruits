@@ -23,17 +23,39 @@ class FruitsController extends AbstractController
     {
         try {
             $page = $request->query->getInt('page', 1);
-            $limit = $request->query->getInt('limit', 10);
-            $offset = ($page - 1) * $limit;
+            $perPage = $request->query->getInt('limit', 12);
 
-            $fruits = $this->fruitRepository->findBy([], null, $limit, $offset);
-            $totalFruits = $this->fruitRepository->count([]);
+            $name = $request->query->get('name', '');
+            $family = $request->query->get('family', '');
+            
+
+            $qb = $this->fruitRepository->createQueryBuilder('f');
+
+            if (!empty($name)) {
+                $qb->andWhere('f.name LIKE :name')->setParameter('name', "%$name%");
+            }
+
+            if (!empty($family)) {
+                $qb->andWhere('f.family = :family')->setParameter('family', $family);
+            }
+
+        
+            $countQb = clone $qb;
+            $totalFruits = (int) $countQb->select('COUNT(f.id)')
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            $fruits = $qb->orderBy('f.name', 'ASC')
+                ->setFirstResult(($page - 1) * $perPage)
+                ->setMaxResults($perPage)
+                ->getQuery()
+                ->getResult();
 
             $data = [
                 'data' => $fruits,
                 'total' => $totalFruits,
                 'page' => $page,
-                'limit' => $limit,
+                'limit' => $perPage,
             ];
 
             return $this->json(
