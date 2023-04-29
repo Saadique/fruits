@@ -17,3 +17,13 @@ services:
     mailer:
         image: schickling/mailcatcher
         ports: ["1025", "1080"]
+    test:
+        image: 'mysql:latest'
+        volumes:
+            - ./mysql_test:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: main_test
+        ports:
+            - '49157'
+        container_name: database_test

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Commands;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -21,12 +21,11 @@ class LoadFruitsCommandTestCase extends KernelTestCase
 
     public function testExecute()
     {
-        
         $commandTester = new CommandTester(self::$container->get(LoadFruitsCommand::class));
         $commandTester->execute([]);
         $this->assertStringContainsString('Fruits loaded successfully', $commandTester->getDisplay());
         $fruits = $this->entityManager->getRepository(\App\Entity\Fruit::class)->findAll();
-        // Update this number if the API changes in the future
+        // Number need to be updated if the API changes in the future
         $this->assertCount(40, $fruits); 
     }
 }

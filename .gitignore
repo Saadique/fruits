@@ -20,5 +20,6 @@
 ###< phpunit/phpunit ###
 
 mysql
+mysql_test
 
 docker-compose.override.yml
