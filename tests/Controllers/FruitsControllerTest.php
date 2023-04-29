@@ -2,27 +2,24 @@
 
 namespace App\Tests\Controllers;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\ControllerBaseTestCase;
 
-class FruitsControllerTest extends WebTestCase
+class FruitsControllerTest extends ControllerBaseTestCase
 {
     public function testGetAllfruitsReturnsJsonResponse(): void
     {
-        $client = static::createClient();
-
-        $client->request('GET', '/fruits');
+        $this->client->request('GET', '/fruits');
 
         $this->assertResponseIsSuccessful();
-        $this->assertJson($client->getResponse()->getContent());
+        $this->assertJson($this->client->getResponse()->getContent());
     }
 
     public function testGetAllfruitsReturnsValidJson(): void
     {
-        $client = static::createClient();
 
-        $client->request('GET', '/fruits');
+        $this->client->request('GET', '/fruits');
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $content = $response->getContent();
         $data = json_decode($content, true);
 
@@ -34,24 +31,51 @@ class FruitsControllerTest extends WebTestCase
 
     public function testGetByIdReturnsJsonResponse(): void
     {
-        $client = static::createClient();
 
-        $client->request('GET', '/fruits/1');
+        $this->client->request('GET', '/fruits/60');
 
         $this->assertResponseIsSuccessful();
-        $this->assertJson($client->getResponse()->getContent());
+        $this->assertJson($this->client->getResponse()->getContent());
     }
 
-    public function testGetByIdReturnsValidJson(): void
-    {
-        $client = static::createClient();
+    public function testInvalidGetByIdReturnsError(): void
+    {  
+        $this->client->request('GET', '/fruits/apple');
 
-        $client->request('GET', '/fruits/60');
+        $response = $this->client->getResponse();
+        $this->assertEquals(500, $response->getStatusCode());
+    }
 
-        $response = $client->getResponse();
-        $content = $response->getContent();
-        $data = json_decode($content, true);
+    public function testInvalidNotExistsGetByIdReturnsError(): void
+    {  
+        $this->client->request('GET', '/fruits/1000000000000');
 
-        dd($data);
+        $response = $this->client->getResponse();
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testGetByIdWithNegativeId(): void
+    {  
+        $this->client->request('GET', '/fruits/-23');
+
+        $response = $this->client->getResponse();
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testGetByIdWithNull(): void
+    {  
+        $this->client->request('GET', '/fruits/null');
+
+        $response = $this->client->getResponse();
+        $this->assertEquals(500, $response->getStatusCode());
+    }
+
+    public function testGetByIdWithXssInjection(): void
+    {  
+        $id = '<script>alert("Hacked!");</script>';
+        $this->client->request('GET', '/fruits/'.$id);
+
+        $response = $this->client->getResponse();
+        $this->assertEquals(404, $response->getStatusCode());
     }
 }

@@ -73,10 +73,20 @@ class FruitsController extends AbstractController
         try {
             $fruit = $this->fruitRepository->find($id);
 
+            if(!$fruit){
+                return $this->json(
+                    $this->createNotFoundException('Fruit with id: '.$id.' was not found.'),
+                    status: 404,
+                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
+                );
+            }
+
             return $this->json(
-                $fruit ? $fruit : $this->createNotFoundException('Fruit with id: '.$id.' was not found.'),
+                $fruit,
                 headers: ['Content-Type' => 'application/json;charset=UTF-8']
             );
+
+
         } catch (Exception $e) {
             return $this->json($e, 500);
         }
