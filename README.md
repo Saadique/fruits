@@ -24,19 +24,19 @@ This is a Symfony version 6 project that requires a few dependencies to be insta
 
 6. Run the following command to build and start the project's containers:
 
-docker-compose up --build
+#### docker-compose up --build
 
 
 7. Connect to the database through a MySQL client using the credentials from the `.env` file or by running the command `docker ps` to view the container's credentials.
 
 8. Start the Symfony server by running the command:
 
-symfony server:start
+#### symfony server:start
 
 
 9. Load the fruits data to the database by running the command:
 
-php bin/console app:load-fruits
+#### php bin/console app:load-fruits
 
 
 10. The server app should now be ready to use.
